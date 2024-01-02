@@ -30,12 +30,6 @@ rays::rays(sf::Vector2f pos1, int numOfRays, sf::Color colour) {
 
     sf::VertexArray lines(sf::LinesStrip, numOfRays * 2);
 
-    /*calc_hit(sf::Vector2f(300, 520), sf::Vector2f(200, 820),
-        pos1, sf::Vector2f(
-            *initX + std::cosf(currentAngle + 6.28318f / numOfRays) * 20000,
-            *initY + std::sinf(currentAngle + 6.28318f / numOfRays) * 20000));*/
-
-
     for (int i = 0; i < numOfRays * 2; i += 2) {
         endPos = sf::Vector2f(
             *initX + std::cosf(currentAngle + TAU / numOfRays) * 20000,
@@ -77,10 +71,6 @@ sf::Vector2f rays::calc_hit(sf::Vector2f wallBegPos, sf::Vector2f wallEndPos, sf
     float x = (lineB-wallB)/(wallSlope-lineSlope);
     float y = x * wallSlope + wallB;
     sf::Vector2f hitPoint = sf::Vector2f(x, y);
-
-    if (lineSlope < -1000 || lineSlope > 10000) {
-        lineSlope = 0;
-    }
 
     if ((std::roundf(x) >= std::min(wallBegPos.x, wallEndPos.x) && std::roundf(x) <= std::max(wallBegPos.x, wallEndPos.x)) &&
         (y >= std::min(wallBegPos.y, wallEndPos.y) && y <= std::max(wallBegPos.y, wallEndPos.y))) {

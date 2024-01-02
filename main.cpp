@@ -30,7 +30,7 @@ int main()
                 window.close();
         }
         sf::Vector2f pos = static_cast<sf::Vector2f>(sf::Mouse::getPosition());
-        rays lines(pos, 1280, raysColor);
+        rays lines(pos, 256, raysColor);
         window.clear();
         window.draw(lines);
         window.draw(wall1);
