@@ -13,19 +13,19 @@ bool rays::is_on_segment(sf::Vector2f& p, sf::Vector2f& q, sf::Vector2f& r) {
     return (q.x <= std::max(p.x, r.x) && q.x >= std::min(p.x, r.x) && q.y <= std::max(p.y, r.y) && q.y >= std::min(p.y, r.y));
 }
 
-rays::rays(sf::Vector2f pos1, int numOfRays, sf::Color colour) {
+rays::rays(sf::Vector2f pos, int numOfRays, sf::Color color) {
 
-    rays::color = colour;
+    rays::color = color;
 
-    float* initX = &pos1.x;
-    float* initY = &pos1.y;
+    float* initX = &pos.x;
+    float* initY = &pos.y;
 
-    float magnitute = 10000;
+    float magnitute = std::numeric_limits<float>::max();
 
     float angleStep = TAU / numOfRays;
     float currentAngle = 0.f;
     sf::Vector2f endPos = sf::Vector2f(*initX + 20000, *initY);
-    float xPrime = get_distance(pos1, closest_hit(wall::get_all_objects(), pos1, endPos));;
+    float xPrime = get_distance(pos, closest_hit(wall::get_all_objects(), pos, endPos));;
     float yPrime = 0;
 
     sf::VertexArray lines(sf::LinesStrip, numOfRays * 2);
@@ -34,13 +34,13 @@ rays::rays(sf::Vector2f pos1, int numOfRays, sf::Color colour) {
         endPos = sf::Vector2f(
             *initX + std::cosf(currentAngle + TAU / numOfRays) * 20000,
             *initY + std::sinf(currentAngle + TAU / numOfRays) * 20000);
-        magnitute = get_distance(pos1, closest_hit(wall::get_all_objects(), pos1, endPos));
+        magnitute = get_distance(pos, closest_hit(wall::get_all_objects(), pos, endPos));
         currentAngle += angleStep;
 
         xPrime = magnitute * std::cosf(currentAngle);
         yPrime = magnitute * std::sinf(currentAngle);
 
-        lines[i].position = pos1;
+        lines[i].position = pos;
         lines[i].color = color;
         lines[i + 1].position = sf::Vector2f(*initX + xPrime, *initY + yPrime);
         lines[i + 1].color = color;
@@ -54,26 +54,19 @@ void rays::draw(sf::RenderTarget& target, sf::RenderStates states)const {
     target.draw(rays::raysSource, states);
 }
 
-sf::Vector2f rays::calc_hit(sf::Vector2f wallBegPos, sf::Vector2f wallEndPos, sf::Vector2f lineBegPos, sf::Vector2f lineEndPos) {
-    
-    float wallSlope = 2000;
-    if (wallEndPos.x - wallBegPos.x != 0) {
-        wallSlope = (wallEndPos.y - wallBegPos.y) / (wallEndPos.x - wallBegPos.x);
-    }
-    float wallB = (wallEndPos.y) - (wallSlope * wallEndPos.x);
-
-    float lineSlope = 10000;
+sf::Vector2f rays::calc_hit(sf::Vector2f& lineBegPos, sf::Vector2f& lineEndPos, wall& wall) {
+    float lineM = 10000;
     if (lineEndPos.x - lineBegPos.x != 0) {
-        lineSlope = (lineEndPos.y - lineBegPos.y) / (lineEndPos.x - lineBegPos.x);
+        lineM = (lineEndPos.y - lineBegPos.y) / (lineEndPos.x - lineBegPos.x);
     }
-    float lineB = (lineBegPos.y) - (lineSlope * lineBegPos.x);
-    
-    float x = (lineB-wallB)/(wallSlope-lineSlope);
-    float y = x * wallSlope + wallB;
+    float lineB = (lineBegPos.y) - (lineM * lineBegPos.x);
+
+    float x = (lineB-wall.b)/(wall.m- lineM);
+    float y = x * wall.m + wall.b;
     sf::Vector2f hitPoint = sf::Vector2f(x, y);
 
-    if ((std::roundf(x) >= std::min(wallBegPos.x, wallEndPos.x) && std::roundf(x) <= std::max(wallBegPos.x, wallEndPos.x)) &&
-        (y >= std::min(wallBegPos.y, wallEndPos.y) && y <= std::max(wallBegPos.y, wallEndPos.y))) {
+    if ((std::roundf(x) >= std::min(wall.begPos.x, wall.endPos.x) && std::roundf(x) <= std::max(wall.begPos.x, wall.endPos.x)) &&
+        (y >= std::min(wall.begPos.y, wall.endPos.y) && y <= std::max(wall.begPos.y, wall.endPos.y))) {
         if (is_on_segment(lineBegPos, hitPoint, lineEndPos)) {
             return hitPoint;
         }
@@ -91,7 +84,7 @@ sf::Vector2f rays::closest_hit(std::vector<wall*> walls, sf::Vector2f& lineBegPo
     float tempD = 0;
     for (int i = 0; i < walls.size(); i++) {
         sf::Vector2f currentHit =
-            rays::calc_hit(walls[i]->begPos, walls[i]->endPos, lineBegPos, lineEndPos);
+            rays::calc_hit(lineBegPos, lineEndPos, *walls[i]);
         tempD = get_distance(lineBegPos, currentHit);
         if (distance > tempD) {
             distance = tempD;
