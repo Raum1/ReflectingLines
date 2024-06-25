@@ -18,5 +18,6 @@ The heart of project, basically all of logic is written there. Here's the purpos
 ''' g++ -o raytracing2D main.cpp wall.cpp rays.cpp rando.cpp -lsfml-graphics -lsfml-window -lsfml-system '''
 It will create and replace a new raytracing2D.o file 
 
+##
 
 Next in the project i plan to create lines reflection and maybe some interface to change the properties of rays during the work of program   
