@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
+#include "rando.h"
 
 const float TAU = 6.2831f;
 

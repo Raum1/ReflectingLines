@@ -45,7 +45,7 @@ int main()
     srand(time(NULL));
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "SFML works!");
 
-    auto walls = generateWalls(false);
+    auto walls = generateWalls(true);
 
     sf::Color raysColor = sf::Color(255, 255, 0);
 
@@ -58,7 +58,7 @@ int main()
                 window.close();
         }
         sf::Vector2f pos = static_cast<sf::Vector2f>(sf::Mouse::getPosition());
-        rays lines(pos, 1024, raysColor);
+        rays lines(pos, 256, raysColor);
         window.clear();
         window.draw(lines);
         for (int i = 0; i < 7; i++)
