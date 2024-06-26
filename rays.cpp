@@ -5,6 +5,7 @@
 #include <cmath>
 #include "rando.h"
 
+// Pi * 2
 const float TAU = 6.2831f;
 
 float rays::get_distance(sf::Vector2f pos1, sf::Vector2f pos2)
